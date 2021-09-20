@@ -10,13 +10,16 @@ RUN mkdir -p src/github.com/nats-io && \
     go build -ldflags "-w -X main.version=${VERSION}" -o /nats
 
 RUN go get github.com/nats-io/nsc
+ADD . /build
+WORKDIR /build
+RUN go build
 
 FROM alpine:latest
 
 RUN apk add --update ca-certificates && mkdir -p /nats/bin && mkdir /nats/conf
 
 COPY docker/nats-server.conf /nats/conf/nats-server.conf
-COPY nats-server /bin/nats-server
+COPY --from=builder /build/nats-server /bin/nats-server
 COPY --from=builder /nats /bin/nats
 COPY --from=builder /go/bin/nsc /bin/nsc
 

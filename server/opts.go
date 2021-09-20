@@ -1871,6 +1871,8 @@ func parseLeafUsers(mv interface{}, errors *[]error, warnings *[]error) ([]*User
 				user.Username = v.(string)
 			case "pass", "password":
 				user.Password = v.(string)
+			case "tls_subset_match":
+				user.AllowTLSSubsetMatch = v.(bool)
 			case "account":
 				// We really want to save just the account name here, but
 				// the User object is *Account. So we create an account object
@@ -3166,6 +3168,8 @@ func parseUsers(mv interface{}, opts *Options, errors *[]error, warnings *[]erro
 				user.Username = v.(string)
 			case "pass", "password":
 				user.Password = v.(string)
+			case "tls_subset_match":
+				user.AllowTLSSubsetMatch = v.(bool)
 			case "permission", "permissions", "authorization":
 				perms, err = parseUserPermissions(tk, errors, warnings)
 				if err != nil {

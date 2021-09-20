@@ -252,6 +252,24 @@ CheckNextRDN:
 	return true
 }
 
+// RDNsSubset returns true if the individual RDNs of the DNs
+// are the same regardless of ordering.
+func (subset *DN) RDNsSubset(superset *DN) bool {
+CheckNextRDN:
+	for _, sub := range subset.RDNs {
+		for _, sup := range superset.RDNs {
+			if (len(sub.Attributes) == len(sup.Attributes)) && (sub.hasAllAttributes(sup.Attributes)) {
+				// Found the RDN, check if next one subsetes.
+				continue CheckNextRDN
+			}
+		}
+
+		// Could not find a subseting individual RDN, auth fails.
+		return false
+	}
+	return true
+}
+
 // AncestorOf returns true if the other DN consists of at least one RDN followed by all the RDNs of the current DN.
 // "ou=widgets,o=acme.com" is an ancestor of "ou=sprockets,ou=widgets,o=acme.com"
 // "ou=widgets,o=acme.com" is not an ancestor of "ou=sprockets,ou=widgets,o=foo.com"

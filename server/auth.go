@@ -70,6 +70,7 @@ type User struct {
 	Permissions            *Permissions        `json:"permissions,omitempty"`
 	Account                *Account            `json:"account,omitempty"`
 	AllowedConnectionTypes map[string]struct{} `json:"connection_types,omitempty"`
+	AllowTLSSubsetMatch    bool                `json:"tls_subset_match,omitempty"`
 }
 
 // clone performs a deep copy of the User struct, returning a new clone with
@@ -519,6 +520,14 @@ func (s *Server) processClientOrLeafAuthentication(c *client, opts *Options) boo
 				// Check in case the DN was reordered.
 				for usr, inputDN := range dns {
 					if inputDN.RDNsMatch(certDN) {
+						user = usr
+						return usr.Username, true
+					}
+				}
+
+				// Check if a subset of the DN matches.
+				for usr, inputDN := range dns {
+					if usr.AllowTLSSubsetMatch && inputDN.RDNsSubset(certDN) {
 						user = usr
 						return usr.Username, true
 					}
