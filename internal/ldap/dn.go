@@ -55,7 +55,7 @@ func FromCertSubject(subject pkix.Name) (*DN, error) {
 		oidString := name.Type.String()
 		typeName, ok := attributeTypeNames[oidString]
 		if !ok {
-			return nil, fmt.Errorf("invalid type name: %+v", name)
+			typeName = oidString
 		}
 		v, ok := name.Value.(string)
 		if !ok {
@@ -102,7 +102,7 @@ func FromRawCertSubject(rawSubject []byte) (*DN, error) {
 			name := atv.Type.String()
 			typeName, ok := attributeTypeNames[name]
 			if !ok {
-				return nil, fmt.Errorf("invalid type name: %+v", name)
+				typeName = name
 			}
 			value, ok := atv.Value.(string)
 			if !ok {
